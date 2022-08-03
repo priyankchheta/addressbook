@@ -8,7 +8,6 @@ pipeline{
                 }
             }
         }
-    }
     stage("UnitTest"){
             steps{
                 script{
