@@ -9,4 +9,12 @@ pipeline{
             }
         }
     }
+    stage("UnitTest"){
+            steps{
+                script{
+                    echo "Unit test is executing OK"
+                }
+            }
+        }
+    }
 }
