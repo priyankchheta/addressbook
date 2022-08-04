@@ -35,6 +35,7 @@ pipeline{
                     sshagent(['Test_server-Key'])
                     {
                         echo "Packaging the app"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.25.103"
                         sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.25.103:home/ec2-user"
                         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.25.103 'bash ~/server-script.sh'"
 
