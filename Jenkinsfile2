@@ -1,0 +1,46 @@
+pipeline{
+    agent none
+    tools{
+        jdk 'myJava'
+        maven 'myMaven'
+    }
+    stages{
+        stage("COMPILE"){
+            agent {label 'linux_slave'}
+            steps{
+                script{
+                    echo "Compiling the code"
+                    sh 'mvn compile'
+                }
+            }
+        }
+        stage("UNITTEST"){
+            agent any
+            steps{
+                script{
+                    echo "Testing the code"
+                    sh 'mvn test'
+                }
+            }
+            post{
+                always{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+         stage("PACKAGE"){
+            agent any
+            steps{
+                script{
+                    sshagent(['Test_server-Key'])
+                    {
+                        echo "Packaging the app"
+                        sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.25.103:home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.25.103 'bash ~/server-script.sh'"
+
+                    }
+                }
+            }
+        }
+    }
+}
