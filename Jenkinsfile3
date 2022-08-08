@@ -1,5 +1,9 @@
 pipeline{
     agent none
+     tools{
+        jdk 'myJava'
+        maven 'myMaven'
+    }
     stages{
         stage("COMPILE"){
         agent {label 'linux_slave'}
