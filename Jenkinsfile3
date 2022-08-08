@@ -1,0 +1,29 @@
+pipeline{
+    agent any
+    stages{
+        stage("COMPILE"){
+            steps{
+                script{
+                    echo "Compiling the code"
+                    sh 'mvn compile'
+                }
+            }
+        }
+        stage("UNITTEST"){
+            steps{
+                script{
+                    echo "Testing the code"
+                    sh 'mvn test'
+                }
+            }
+        }
+         stage("PACKAGE"){
+            steps{
+                script{
+                    echo "Packaging the code"
+                    sh 'mvn package'
+                }
+            }
+        }
+    }
+}
