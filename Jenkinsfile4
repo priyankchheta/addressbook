@@ -41,12 +41,12 @@ pipeline{
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
                     {
                         echo "111"
-                        sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.16.217:/home/ec2-user"
+                        sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.81.223:/home/ec2-user"
                         echo "222"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.16.217 'bash ~/server-script.sh'"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.81.223 'bash ~/server-script.sh'"
                         sh "sudo docker build -t priyankchheta/test-docker:$BUILD_NUMBER /home/ec2-user/addressbook"
-                        sh "ssh ec2-user@172.31.16.217 sudo docker login -u $USERNAME -p $PASSWORD"
-                        sh "ssh ec2-user@172.31.16.217 sudo docker push priyankchheta/test-docker:$BUILD_NUMBER"
+                        sh "ssh ec2-user@172.31.81.223 sudo docker login -u $USERNAME -p $PASSWORD"
+                        sh "ssh ec2-user@172.31.81.223 sudo docker push priyankchheta/test-docker:$BUILD_NUMBER"
                     }
                     }
                      
@@ -57,8 +57,13 @@ pipeline{
         stage("Deploy the docker container"){
             steps{
                 script{
+                    sshagent(['Test-server-key']){
+            withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+            {            
             echo "deploying the app"
             sh "ssh ec2-user@172.31.16.217 sudo docker run -itd -P chhetapriyank/test-docker:$BUILD_NUMBER"
+                    }
+                    }
         }
             }
     }
