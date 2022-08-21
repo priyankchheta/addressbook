@@ -44,7 +44,7 @@ pipeline{
                         sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.81.223:/home/ec2-user"
                         echo "222"
                         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.81.223 'bash ~/server-script.sh'"
-                        sh "sudo docker build -t priyankchheta/test-docker:$BUILD_NUMBER /home/ec2-user/addressbook"
+                        sh "ssh ec2-user@172.31.81.223 sudo docker build -t priyankchheta/test-docker:$BUILD_NUMBER /home/ec2-user/addressbook"
                         sh "ssh ec2-user@172.31.81.223 sudo docker login -u $USERNAME -p $PASSWORD"
                         sh "ssh ec2-user@172.31.81.223 sudo docker push priyankchheta/test-docker:$BUILD_NUMBER"
                     }
