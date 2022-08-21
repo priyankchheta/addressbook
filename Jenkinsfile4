@@ -34,6 +34,8 @@ pipeline{
         stage("Build the docker image"){
             steps{
                 script{
+                    sshagent(['Test-server-key'])
+                    {
                    
                     echo "Packaging the app"
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
@@ -45,6 +47,7 @@ pipeline{
                         sh "sudo docker build -t priyankchheta/test-docker:$BUILD_NUMBER /home/ec2-user/addressbook"
                         sh "ssh ec2-user@172.31.16.217 sudo docker login -u $USERNAME -p $PASSWORD"
                         sh "ssh ec2-user@172.31.16.217 sudo docker push priyankchheta/test-docker:$BUILD_NUMBER"
+                    }
                     }
                      
                     
