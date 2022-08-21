@@ -14,3 +14,5 @@ git clone https://github.com/priyankchheta/addressbook.git
 fi
 cd /home/ec2-user/addressbook
 mvn package
+sudo yum install docker -y
+sudo systemctl start docker

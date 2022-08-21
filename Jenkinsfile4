@@ -1,0 +1,62 @@
+pipeline{
+    agent any
+    tools{
+        maven 'mymaven'
+        jdk 'myjava'
+    }
+    stages{
+        stage("Compile"){
+            steps{
+              script{
+                 echo "Compiling the code"
+                
+                 sh 'mvn compile'
+              }
+            }
+        }
+        stage("test"){
+             steps{
+                script{
+                  echo "Testing the code"
+                  sh 'mvn test'
+                  }
+             }
+             
+        }
+        stage("Package"){
+             steps{
+                script{
+                  echo "Packaging the code"
+                  sh 'mvn package'
+              }
+             }
+        }
+        stage("Build the docker image"){
+            steps{
+                script{
+                   
+                    echo "Packaging the app"
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+                    {
+                        sh "scp -o StrictHostKeyChecking=no server-script.sh ec2-user@172.31.81.223:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.81.223 'bash ~/server-script.sh'"
+                        sh "sudo docker build -t priyankchheta/test-docker:$BUILD_NUMBER /home/ec2-user/addressbook"
+                        sh "ssh ec2-user@172.31.81.223 sudo docker login -u $USERNAM -p $PASSWORD"
+                        sh "ssh ec2-user@172.31.81.223 sudo docker push priyankchheta/test-docker:$BUILD_NUMBER"
+                    }
+                     
+                    
+                }
+            }
+        }
+        stage("Deploy the docker container"){
+            steps{
+                script{
+            echo "deploying the app"
+            sh "ssh ec2-user@172.31.81.223 sudo docker run -itd -P chhetapriyank/test-docker:$BUILD_NUMBER"
+        }
+            }
+    }
+}
+}
+
