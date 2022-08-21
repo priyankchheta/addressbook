@@ -39,9 +39,8 @@ pipeline{
                     withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
                     {
                         echo "111"
-                        sh "ssh -o StrictHostKeyChecking=no user1@172.31.17.205 exit"
-                        echo "222"
                         sh "scp -o StrictHostKeyChecking=no server-script.sh user1@172.31.17.205:/home/ec2-user"
+                        echo "222"
                         sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.17.205 'bash ~/server-script.sh'"
                         sh "sudo docker build -t priyankchheta/test-docker:$BUILD_NUMBER /home/ec2-user/addressbook"
                         sh "ssh user1@172.31.17.205 sudo docker login -u $USERNAME -p $PASSWORD"
